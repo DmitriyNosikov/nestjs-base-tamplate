@@ -15,7 +15,7 @@ async function bootstrap() {
   const port = configService.get(`${ConfigEnvironment.APP}.${ConfigEnum.PORT}`);
   const frontUrl = configService.get(`${ConfigEnvironment.APP}.${ConfigEnum.FRONT_URL}`);
   const corsEnabledURLs = configService.get(`${ConfigEnvironment.APP}.${ConfigEnum.CORS_ACCESS_ENABLED_URLS}`)
-    .split(',');
+    .split(', ');
 
   app.setGlobalPrefix(GLOBAL_API_PREFIX);  // Устанавливаем глобальный префикс для API
   app.enableCors({
