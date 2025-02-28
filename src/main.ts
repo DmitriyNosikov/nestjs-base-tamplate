@@ -5,6 +5,8 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnum, ConfigEnvironment } from './app/config';
 
+import { RequestLoggerInterceptor } from './app/modules/libs/interceptors';
+
 import { GLOBAL_API_PREFIX } from './app/app.constant';
 
 async function bootstrap() {
@@ -14,7 +16,8 @@ async function bootstrap() {
   const host = configService.get(`${ConfigEnvironment.APP}.${ConfigEnum.HOST}`);
   const port = configService.get(`${ConfigEnvironment.APP}.${ConfigEnum.PORT}`);
   const frontUrl = configService.get(`${ConfigEnvironment.APP}.${ConfigEnum.FRONT_URL}`);
-  const corsEnabledURLs = configService.get(`${ConfigEnvironment.APP}.${ConfigEnum.CORS_ACCESS_ENABLED_URLS}`)
+  const corsEnabledURLs = configService
+    .get(`${ConfigEnvironment.APP}.${ConfigEnum.CORS_ACCESS_ENABLED_URLS}`)
     .split(', ');
 
   app.setGlobalPrefix(GLOBAL_API_PREFIX);  // Устанавливаем глобальный префикс для API
@@ -35,6 +38,9 @@ async function bootstrap() {
       }
     }),
   );
+
+  // Логирование входящих запросов
+  app.useGlobalInterceptors(new RequestLoggerInterceptor());
 
   // Запуск сервера
   await app.listen(port ?? 3000);
