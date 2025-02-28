@@ -3,9 +3,6 @@ import { UserRolesType } from '@libs/types';
 
 export class CreateUserDTO {
   @IsString()
-  fullName: string;
-
-  @IsString()
   @IsOptional()
   login?: string;
   

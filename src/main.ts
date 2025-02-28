@@ -1,13 +1,13 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
-
 import { ConfigService } from '@nestjs/config';
-import { ConfigEnum, ConfigEnvironment } from './app/config';
 
-import { RequestLoggerInterceptor } from './app/modules/libs/interceptors';
+import { ConfigEnum, ConfigEnvironment } from '@core/config';
 
-import { GLOBAL_API_PREFIX } from './app/app.constant';
+import { RequestLoggerInterceptor } from '@libs/interceptors'
+;
+import { AppModule } from '@core/app.module';
+import { GLOBAL_API_PREFIX } from '@core/app.constant';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

@@ -28,10 +28,10 @@ export class UserService {
   ) { }
 
   public async createUser(userData: CreateUserDTO) {
-    const isUserExists = await this.userRepository.findByLogin(userData.fullName);
+    const isUserExists = await this.userRepository.findByLogin(userData.login);
 
     if (isUserExists) {
-      throw new ConflictException(`Пользователь с логином ${userData.fullName} уже зарегистрирован в системе`);
+      throw new ConflictException(`Пользователь с логином ${userData.login} уже зарегистрирован в системе`);
     }
 
     const hashedUsersPassword = await this.hasher.getHash(userData.password);

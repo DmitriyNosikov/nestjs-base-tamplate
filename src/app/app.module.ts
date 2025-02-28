@@ -2,15 +2,18 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 
-import { ENV_FILE_PATH } from './app.constant';
+import { getDbOPtions } from '@libs/helpers';
+
+import { ENV_FILE_PATH } from '@core/app.constant';
 
 import {
   ConfigEnvironment,
   appConfig,
   jwtConfig,
   pgConfig
-} from './config';
-import { getDbOPtions } from '@libs/helpers';
+} from '@core/config/';
+
+import { UserModule } from '@modules/user/user.module';
 
 @Module({
   imports: [
@@ -26,8 +29,11 @@ import { getDbOPtions } from '@libs/helpers';
     SequelizeModule.forRootAsync(
       getDbOPtions(ConfigEnvironment.PG)
     ),
+
+    // Подключаем модули
+    UserModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
