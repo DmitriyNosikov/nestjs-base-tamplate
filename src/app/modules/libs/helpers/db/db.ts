@@ -5,9 +5,7 @@ import { ConfigEnvironment } from 'src/app/config';
 import { ConfigEnum } from 'src/app/config/config.schema';
 import { PGConfigEnum } from 'src/app/config/pg-config/pg-config.schema';
 
-// import {
-//   User,
-// } from 'src/app/models';
+import { User } from 'src/app/models';
 
 export function getDbOPtions(optionSpace: string): SequelizeModuleAsyncOptions {
   return {
@@ -38,7 +36,7 @@ export function getDbOPtions(optionSpace: string): SequelizeModuleAsyncOptions {
       // Список моделей, которые необходимо
       // загрузить при конфигурировании sequelize
       models: [
-        // User,
+        User,
       ],
     }),
     inject: [ConfigService],

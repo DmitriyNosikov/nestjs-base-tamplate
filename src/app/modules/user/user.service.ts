@@ -1,0 +1,118 @@
+import { ConflictException, HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+
+import { BCryptHasher } from '../libs/helpers';
+
+import { User } from 'src/app/models';
+import { UserRepository } from './user.repository';
+
+import { CreateUserDTO } from './dto/create-user.dto';
+import { LoginUserDTO } from './dto/login-user.dto';
+import { CreateUserAccessTokenRDO } from './rdo/create-user-access-token.rdo';
+
+import { getUserJWTPayload } from '../libs/helpers/jwt/jwt';
+import { JwtService } from '@nestjs/jwt';
+import { UserRolesTypeEnum } from '../libs';
+
+@Injectable()
+export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
+  constructor(
+    private readonly userRepository: UserRepository,
+
+    private readonly jwtService: JwtService,
+
+    @Inject('Hasher')
+    private readonly hasher: BCryptHasher,
+  ) { }
+
+  public async createUser(userData: CreateUserDTO) {
+    const isUserExists = await this.userRepository.findByLogin(userData.fullName);
+
+    if (isUserExists) {
+      throw new ConflictException(`Пользователь с логином ${userData.fullName} уже зарегистрирован в системе`);
+    }
+
+    const hashedUsersPassword = await this.hasher.getHash(userData.password);
+    const newUserData: CreateUserDTO = {
+      ...userData,
+      login: userData.login,
+      password: hashedUsersPassword,
+      role: userData.role ?? UserRolesTypeEnum.USER
+    };
+
+    const newUser = await this.userRepository.create(newUserData);
+
+    return newUser;
+  }
+
+  public async index() {
+    const users = await this.userRepository.index();
+
+    return users;
+  }
+
+  public async updateUser(userId: number, updateData: Partial<CreateUserDTO>) {
+    const isUserExists = await this.userRepository.findById(userId);
+
+    if (!isUserExists) {
+      throw new Error(`Пользователь с id ${userId} не найден`);
+    }
+
+    const updatedUser = await this.userRepository.update(userId, updateData);
+
+    return updatedUser;
+  }
+
+  public async deleteUser(userId: number): Promise<void> {
+    await this.userRepository.delete(userId);
+  }
+
+  public async getUserById(userId: number) {
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      throw new Error(`Пользователь с id ${userId} не найден`);
+    }
+
+    return user
+  }
+
+  public async authorize(dto: LoginUserDTO): Promise<User> {
+    const { login, password } = dto;
+    const user = await this.userRepository.findByLogin(login);
+
+    if (!user) {
+      throw new NotFoundException(`Пользователь ${user} не найден`);
+    }
+
+    const verifyUser = await this.hasher.checkHash(password, user.password);
+
+    if (!verifyUser) {
+      throw new UnauthorizedException('Некорректный логин/пароль пользователя');
+    }
+
+    return user;
+  }
+
+  public async createToken(userId: number): Promise<CreateUserAccessTokenRDO> {
+    const existsUser = await this.userRepository.findById(userId);
+
+    if (!existsUser) {
+      throw new Error(`Пользователь с id ${userId} не найден`);
+    }
+
+    const accessTokenPayload = getUserJWTPayload(existsUser);
+
+    try {
+      const accessToken = await this.jwtService.signAsync(accessTokenPayload);
+
+
+      return { accessToken };
+    } catch (error) {
+      this.logger.error(`Ошибка генерации токена доступа пользователя ${userId}: `, error);
+
+      throw new HttpException(`Не удалось сгенерировать токен доступа для пользователя ${userId}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+}

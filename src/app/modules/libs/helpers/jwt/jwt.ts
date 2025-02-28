@@ -1,11 +1,10 @@
 import { JwtModuleAsyncOptions } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config';
 
-import { CompanyTokenPayloadI, UserAdminTokenPayloadI } from '../../interfaces';
-import { Company, User } from 'src/app/models';
-import { parseTime } from '../date';
-import dayjs from 'dayjs';
+import { User } from 'src/app/models';
+
 import { UserRolesType } from '../../types/roles.type';
+import { UserTokenPayloadType } from '../../types/token/token-payload.type';
 
 export function getJWTOptions(optionSpace: string): JwtModuleAsyncOptions {
   return {
@@ -22,24 +21,9 @@ export function getJWTOptions(optionSpace: string): JwtModuleAsyncOptions {
   }
 }
 
-
-export function getCompanyJWTPayload(company: Company): CompanyTokenPayloadI {
-  return {
-    companyId: company.id
-  }
-}
-
-export function getUserJWTPayload(user: User): UserAdminTokenPayloadI {
+export function getUserJWTPayload(user: User): UserTokenPayloadType {
   return {
     userId: user.id,
     role: user.role as UserRolesType
   }
-}
-
-export function getJWTExpirationDate(time: string): Date {
-  const expiresInTime = parseTime(time);
-  const expiresIn = dayjs()
-  .add(expiresInTime.value, expiresInTime.unit).toDate()
-
-  return expiresIn;
 }

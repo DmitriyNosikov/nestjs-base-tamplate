@@ -1,0 +1,67 @@
+@host = 127.0.0.1
+@port = 5000
+@baseUrl = http://{{host}}:{{port}}/api/users
+
+@userId = 1
+
+@authorization = Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55SWQiOjEsImlhdCI6MTczODE1NTUxNiwiZXhwIjoxNzM4MTU2NDE2fQ.FXP83a-fTrzVQ4w5_Ud1K8jijwW5XQ0qfCzd3gF0Iwk
+
+# User login
+POST {{baseUrl}}/login HTTP/1.1
+Content-Type: application/json
+{{authorization}}
+
+{
+  "login": "admin",
+  "password": "password"
+}
+###
+
+# Create new user
+POST {{baseUrl}}/ HTTP/1.1
+Content-Type: application/json
+{{authorization}}
+
+{
+  "fullName": "Test User",
+  "companyId": 1,
+  "login": "admin",
+  "password": "password",
+  "role": "ADMIN"
+}
+###
+
+# Get users list
+GET {{baseUrl}}/ HTTP/1.1
+{{authorization}}
+###
+
+# Find users by company id
+GET {{baseUrl}}/by-company HTTP/1.1
+Content-Type: application/json
+{{authorization}}
+###
+
+# Find user by id
+GET {{baseUrl}}/{{userId}} HTTP/1.1
+Content-Type: application/json
+###
+
+# Find user by accessKey
+GET {{baseUrl}}/by-access-key/TestAccessKey HTTP/1.1
+Content-Type: application/json
+###
+
+#  Update user
+PATCH {{baseUrl}}/{{userId}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "fullName": "Test 2"
+}
+###
+
+# Roles guard test
+GET {{baseUrl}}/test HTTP/1.1
+{{authorization}}
+###
