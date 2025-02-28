@@ -14,7 +14,7 @@ import { USER_ROUTES } from './user.constant';
 
 import { JWTAuthGuard, UserLocalAuthGuard } from '../libs/guards';
 
-import { User } from 'src/app/models';
+import { User } from '@models/index';
 import { UserService } from './user.service';
 
 import { RequestWithPayloadInterface } from '../libs/interfaces';

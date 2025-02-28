@@ -16,6 +16,20 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@models/*": [
+        "./src/app/models/*"
+      ],
+      "@core/*": [
+        "./src/app/*"
+      ],
+      "@modules/*": [
+        "./src/app/modules/*"
+      ],
+      "@libs/*": [
+        "./src/app/modules/libs/*"
+      ]
+    }
   }
 }
