@@ -1,10 +1,12 @@
 import { ConflictException, HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigType } from '@nestjs/config';
+
+import { jwtConfig } from '@core/config';
+import { BCryptHasher, getJWTExpirationDate, getUserJWTPayload } from '@libs/helpers';
+import { RefreshTokenPayloadType, UserRolesTypeEnum } from '@libs/types';
 
 import { RefreshTokenService } from '@modules/refresh-token/refresh-token.service';
-
-import { BCryptHasher, getUserJWTPayload } from '@libs/helpers';
-import { RefreshTokenPayloadType, UserRolesTypeEnum } from '@libs/types';
 
 import { User } from '@models/index';
 import { UserRepository } from './user.repository';
@@ -22,6 +24,9 @@ export class UserService {
 
     private readonly jwtService: JwtService,
     private readonly refreshTokenService: RefreshTokenService,
+
+    @Inject(jwtConfig.KEY)
+    private readonly jwtOptions: ConfigType<typeof jwtConfig>,
 
     @Inject('Hasher')
     private readonly hasher: BCryptHasher,
@@ -104,12 +109,21 @@ export class UserService {
     }
 
     const accessTokenPayload = getUserJWTPayload(existsUser);
+    const refreshTokenPayload: RefreshTokenPayloadType = {
+      ...accessTokenPayload,
+      tokenId: crypto.randomUUID(),
+      expiresIn: getJWTExpirationDate(this.jwtOptions.refreshTokenExpiresIn)
+    };
 
     try {
       const accessToken = await this.jwtService.signAsync(accessTokenPayload);
+      const refreshToken = await this.jwtService.signAsync(refreshTokenPayload, {
+        secret: this.jwtOptions.refreshTokenSecret,
+        expiresIn: this.jwtOptions.refreshTokenExpiresIn
+      });
 
 
-      return { accessToken };
+      return { accessToken, refreshToken };
     } catch (error) {
       this.logger.error(`Ошибка генерации токена доступа пользователя ${userId}: `, error);
 

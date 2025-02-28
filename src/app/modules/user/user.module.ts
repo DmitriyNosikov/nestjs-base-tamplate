@@ -3,7 +3,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { JwtModule } from '@nestjs/jwt';
 
 import { BCryptHasher, getJWTOptions } from '@libs/helpers';
-import { JWTAccessStrategy, UserLocalStrategy } from '@libs/strategies';
+import { JWTAccessStrategy, JWTRefreshStrategy, UserLocalStrategy } from '@libs/strategies';
 
 import { User } from '@models/index';
 import { UserController } from './user.controller';
@@ -26,6 +26,7 @@ import { RefreshTokenModule } from '@modules/refresh-token/refresh-token.module'
   providers: [
     UserLocalStrategy,
     JWTAccessStrategy,
+    JWTRefreshStrategy,
 
     UserService,
     UserRepository,

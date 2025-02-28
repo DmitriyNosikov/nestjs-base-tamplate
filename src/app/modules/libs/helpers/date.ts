@@ -1,5 +1,5 @@
 
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 
 export type DateTimeUnit = 's' | 'h' | 'd' | 'm' | 'y';
 export type TimeAndUnit = { value: number; unit: DateTimeUnit };
