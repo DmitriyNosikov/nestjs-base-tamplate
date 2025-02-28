@@ -122,6 +122,8 @@ export class UserService {
         expiresIn: this.jwtOptions.refreshTokenExpiresIn
       });
 
+      // Сохраняем рефреш-токен в БД
+      await this.refreshTokenService.createRefreshSession(refreshTokenPayload);
 
       return { accessToken, refreshToken };
     } catch (error) {
