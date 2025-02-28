@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 
-import { User } from 'src/app/models';
+import { User } from '@models/index';
 
 import { CreateUserDTO } from './dto/create-user.dto';
 

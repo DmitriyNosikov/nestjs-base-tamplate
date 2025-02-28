@@ -1,5 +1,5 @@
 import { IsOptional, IsString } from 'class-validator';
-import { UserRolesType } from '../../libs';
+import { UserRolesType } from '@libs/types';
 
 export class CreateUserDTO {
   @IsString()

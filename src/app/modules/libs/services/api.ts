@@ -1,11 +1,13 @@
+import { Logger } from '@nestjs/common';
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
+import { getLoggerPrefix } from '../helpers/utils';
+
 const TIMEOUT = 50000;
+const LOGGER_PREFIX = getLoggerPrefix('[AXIOS]');
 
 export function createAPI(
   baseUrl: string,
-  clientId: number,
-  apiKey: string,
   timeout: number = TIMEOUT
 ): AxiosInstance {
   if (!baseUrl) {
@@ -18,8 +20,7 @@ export function createAPI(
   });
 
   api.interceptors.request.use((config) => {
-    config.headers['Client-id'] = clientId;
-    config.headers['Api-key'] = apiKey;
+    // config.headers['Custom-header'] = '';
 
     return config;
   });
@@ -28,12 +29,12 @@ export function createAPI(
     (response) => response,
     (error: AxiosError) => {  
       if (error?.response && error.response.data) {
-        console.log('[Axios] Ошибка выполнения запроса: ');
-        console.log(error.response.data);
+        Logger.error(`${LOGGER_PREFIX} Ошибка выполнения запроса: `);
+        Logger.error(error.response.data);
 
         return Promise.reject(error.response.data);
       } else {
-        console.log('Error: ', error);
+        Logger.error(`${LOGGER_PREFIX} Error:`, error);
       }
 
       return Promise.reject(error);
@@ -49,7 +50,7 @@ export function createPerformanceAPI(
   timeout: number = TIMEOUT
 ): AxiosInstance {
   if (!baseUrl) {
-    throw new Error('Не передан базовый URL для API');
+    throw new Error(`Не передан базовый URL для API`);
   }
 
   if (!apiToken) {
@@ -71,11 +72,11 @@ export function createPerformanceAPI(
     (response) => response,
     (error: AxiosError) => {      
       if (error?.response && error.response.data) {
-        console.error(`[Axios] Ошибка выполнения запроса (статус: ${error.status}): `);
-        console.error('Ответ от сервера: ', error.response.data);
-        console.error('Параметры запроса: ', error.config);
+        console.error(`${LOGGER_PREFIX} Ошибка выполнения запроса (статус: ${error.status}): `);
+        console.error(`${LOGGER_PREFIX} Ответ от сервера: `, error.response.data);
+        console.error(`${LOGGER_PREFIX} Параметры запроса: `, error.config);
       } else {
-        console.error('Error: ', error);
+        console.error(`${LOGGER_PREFIX} Error: `, error);
       }
 
       // return Promise.reject(error);

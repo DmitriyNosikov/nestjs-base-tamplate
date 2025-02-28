@@ -1,10 +1,10 @@
 import { JwtModuleAsyncOptions } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config';
 
-import { User } from 'src/app/models';
+import { User } from '@models/index';
 
-import { UserRolesType } from '../../types/roles.type';
-import { UserTokenPayloadType } from '../../types/token/token-payload.type';
+import { UserRolesType } from '@libs/types/index';
+import { UserTokenPayloadType } from '@libs/types/index';
 
 export function getJWTOptions(optionSpace: string): JwtModuleAsyncOptions {
   return {

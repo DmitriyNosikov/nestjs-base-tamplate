@@ -1,11 +1,14 @@
 import { ConfigService } from '@nestjs/config';
 import { SequelizeModuleAsyncOptions } from '@nestjs/sequelize';
 
-import { ConfigEnvironment } from 'src/app/config';
-import { ConfigEnum } from 'src/app/config/config.schema';
-import { PGConfigEnum } from 'src/app/config/pg-config/pg-config.schema';
+import { ConfigEnvironment } from '@core/config';
+import { ConfigEnum } from '@core/config/config.schema';
+import { PGConfigEnum } from '@core/config/pg-config/pg-config.schema';
 
-import { User } from 'src/app/models';
+import {
+  RefreshToken,
+  User
+} from '@models/index';
 
 export function getDbOPtions(optionSpace: string): SequelizeModuleAsyncOptions {
   return {
@@ -37,6 +40,7 @@ export function getDbOPtions(optionSpace: string): SequelizeModuleAsyncOptions {
       // загрузить при конфигурировании sequelize
       models: [
         User,
+        RefreshToken
       ],
     }),
     inject: [ConfigService],

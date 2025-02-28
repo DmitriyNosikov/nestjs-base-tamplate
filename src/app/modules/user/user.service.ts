@@ -1,17 +1,17 @@
 import { ConflictException, HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
-import { BCryptHasher } from '../libs/helpers';
+import { RefreshTokenService } from '@modules/refresh-token/refresh-token.service';
 
-import { User } from 'src/app/models';
+import { BCryptHasher, getUserJWTPayload } from '@libs/helpers';
+import { RefreshTokenPayloadType, UserRolesTypeEnum } from '@libs/types';
+
+import { User } from '@models/index';
 import { UserRepository } from './user.repository';
 
 import { CreateUserDTO } from './dto/create-user.dto';
 import { LoginUserDTO } from './dto/login-user.dto';
 import { CreateUserAccessTokenRDO } from './rdo/create-user-access-token.rdo';
-
-import { getUserJWTPayload } from '../libs/helpers/jwt/jwt';
-import { JwtService } from '@nestjs/jwt';
-import { UserRolesTypeEnum } from '../libs';
 
 @Injectable()
 export class UserService {
@@ -21,6 +21,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
 
     private readonly jwtService: JwtService,
+    private readonly refreshTokenService: RefreshTokenService,
 
     @Inject('Hasher')
     private readonly hasher: BCryptHasher,
@@ -114,5 +115,20 @@ export class UserService {
 
       throw new HttpException(`Не удалось сгенерировать токен доступа для пользователя ${userId}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  public async refreshToken(
+    tokenPayload: RefreshTokenPayloadType
+  ): Promise<CreateUserAccessTokenRDO> {
+    const [, tokens] = await Promise.all([
+      // т.к. рефреш-токен одноразовый - 
+      // удаляем его из бд при использованее
+      await this.refreshTokenService.deleteRefreshSession(tokenPayload.tokenId),
+
+      // получаем новую пару ключей
+      await this.createToken(tokenPayload.userId)
+    ]);
+
+    return tokens;
   }
 }

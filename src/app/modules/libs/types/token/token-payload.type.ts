@@ -6,7 +6,7 @@ export type UserTokenPayloadType = {
 }
 
 export type RefreshTokenPayloadType = {
+  userId: number;
   tokenId: string;
   expiresIn: Date;
-  companyId: number;
 }

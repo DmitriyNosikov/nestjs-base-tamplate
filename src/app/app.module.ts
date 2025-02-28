@@ -10,7 +10,7 @@ import {
   jwtConfig,
   pgConfig
 } from './config';
-import { getDbOPtions } from './modules/libs';
+import { getDbOPtions } from '@libs/helpers';
 
 @Module({
   imports: [

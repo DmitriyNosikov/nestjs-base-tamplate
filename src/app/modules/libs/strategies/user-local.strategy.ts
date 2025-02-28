@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport'
 import { Strategy } from 'passport-local';
 
-import { User } from 'src/app/models';
+import { User } from '@models/index';
 import { UserService } from '../../user/user.service';
 
 const USERNAME_FIELD_NAME = 'login';

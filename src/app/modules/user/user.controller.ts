@@ -12,23 +12,27 @@ import {
 
 import { USER_ROUTES } from './user.constant';
 
-import { JWTAuthGuard, UserLocalAuthGuard } from '../libs/guards';
+import { JWTAuthGuard, JWTRefreshGuard, UserLocalAuthGuard } from '@libs/guards';
+import { fillDTO } from '@libs/helpers';
+import { RefreshTokenPayloadType } from '@libs/types';
+import { RequestWithPayloadInterface } from '@libs/interfaces';
+
+
+import { CreateUserDTO } from './dto/create-user.dto';
+import { CreateUserRDO } from './rdo/create-user.rdo';
+import { CreateUserAccessTokenRDO } from './rdo/create-user-access-token.rdo';
 
 import { User } from '@models/index';
 import { UserService } from './user.service';
-
-import { RequestWithPayloadInterface } from '../libs/interfaces';
-import { CreateUserDTO } from './dto/create-user.dto';
-import { CreateUserRDO } from './rdo/create-user.rdo';
-
-import { fillDTO } from '../libs/helpers';
-
 @Controller(USER_ROUTES.BASE)
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(
+    private readonly userService: UserService
+  ) { }
+
   @Post(USER_ROUTES.LOGIN)
   @UseGuards(UserLocalAuthGuard)
-  public async adminLogin(
+  public async login(
     @Req() { user: loggedUser }: RequestWithPayloadInterface<User>,
   ) {
     const tokens = await this.userService.createToken(loggedUser.id);
@@ -39,6 +43,15 @@ export class UserController {
     };
   }
 
+  @Post(USER_ROUTES.TOKEN_REFRESH)
+  @UseGuards(JWTRefreshGuard)
+  public async refreshToken(
+    @Req() { user: refreshTokenPayload }: RequestWithPayloadInterface<RefreshTokenPayloadType>
+  ): Promise<CreateUserAccessTokenRDO> {
+    const tokens = await this.userService.refreshToken(refreshTokenPayload);
+
+    return tokens;
+  }
 
   @Get(USER_ROUTES.GET)
   @UseGuards(JWTAuthGuard)

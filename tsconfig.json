@@ -18,11 +18,11 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@models/*": [
-        "./src/app/models/*"
-      ],
       "@core/*": [
         "./src/app/*"
+      ],
+      "@models/*": [
+        "./src/app/models/*"
       ],
       "@modules/*": [
         "./src/app/modules/*"
