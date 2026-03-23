@@ -5,7 +5,7 @@ import { jwtConfig } from '@core/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { RefreshTokenPayloadType } from '@libs/types'
+import { RefreshTokenPayloadType } from '@core/types'
 import { RefreshTokenService } from '@modules/refresh-token/refresh-token.service';
 import { TokenNotExistsException } from '@modules/refresh-token/exceptions/token-not-exists.exception';
 
@@ -26,7 +26,7 @@ export class JWTRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
   public async validate(payload: RefreshTokenPayloadType) {
     const isTokenExists = await this.refreshTokenService.exists(payload.tokenId);
 
-    if(!isTokenExists) {
+    if (!isTokenExists) {
       throw new TokenNotExistsException(payload.tokenId);
     }
 

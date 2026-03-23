@@ -1,5 +1,5 @@
 # Compose (prod): docker compose --file=./docker-compose.yml --project-name "nestjs-base-template" --env-file=./.env up -d
-# Compose (dev): docker compose --file=./docker-compose.yml --project-name "nestjs-base-template" --env-file=./dev.env up -d
+# Compose (dev): docker compose --file=./docker-compose.yml --project-name "nestjs-base-template" --env-file=./.env.dev up -d
 # Healthcheck: docker inspect nestjs-base-template.pgadmin --format='{{.State.Health}}'
 version: '3.9'
 services:

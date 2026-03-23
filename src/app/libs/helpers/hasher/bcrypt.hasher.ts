@@ -1,7 +1,7 @@
 
 import { genSalt, hash, compare } from 'bcrypt';
 
-import { HasherI } from '../../interfaces';
+import { HasherI } from '../../../interfaces';
 
 const SALT_ROUNDS = 10;
 

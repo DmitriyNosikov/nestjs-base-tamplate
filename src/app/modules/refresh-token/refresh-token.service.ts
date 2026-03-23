@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { jwtConfig } from '@core/config';
 
-import { getJWTExpirationDate } from '@libs/helpers';
-import { RefreshTokenPayloadType } from '@libs/types';
+import { getJWTExpirationDate } from '@core/libs/helpers';
+import { RefreshTokenPayloadType } from '@core/types';
 
 import { CreateRefreshTokenDTO } from './dto/create-refresh-token.dto';
 

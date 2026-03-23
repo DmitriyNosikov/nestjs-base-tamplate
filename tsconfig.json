@@ -28,7 +28,7 @@
         "./src/app/modules/*"
       ],
       "@libs/*": [
-        "./src/app/modules/libs/*"
+        "src/app/libs/*"
       ]
     }
   }

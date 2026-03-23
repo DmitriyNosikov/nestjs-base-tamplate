@@ -4,8 +4,8 @@ import { ConfigService } from '@nestjs/config';
 
 import { ConfigEnum, ConfigEnvironment } from '@core/config';
 
-import { RequestLoggerInterceptor } from '@libs/interceptors'
-;
+import { RequestLoggerInterceptor } from '@core/libs/interceptors'
+  ;
 import { AppModule } from '@core/app.module';
 import { GLOBAL_API_PREFIX } from '@core/app.constant';
 

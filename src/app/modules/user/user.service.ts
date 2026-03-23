@@ -3,8 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
 
 import { jwtConfig } from '@core/config';
-import { BCryptHasher, getJWTExpirationDate, getUserJWTPayload } from '@libs/helpers';
-import { RefreshTokenPayloadType, UserRolesTypeEnum } from '@libs/types';
+import { BCryptHasher, getJWTExpirationDate } from '@core/libs/helpers';
+import { RefreshTokenPayloadType, UserRolesType, UserRolesTypeEnum, UserTokenPayloadType } from '@core/types';
 
 import { RefreshTokenService } from '@modules/refresh-token/refresh-token.service';
 
@@ -108,7 +108,7 @@ export class UserService {
       throw new Error(`Пользователь с id ${userId} не найден`);
     }
 
-    const accessTokenPayload = getUserJWTPayload(existsUser);
+    const accessTokenPayload = this.getUserJWTPayload(existsUser);
     const refreshTokenPayload: RefreshTokenPayloadType = {
       ...accessTokenPayload,
       tokenId: crypto.randomUUID(),
@@ -146,5 +146,12 @@ export class UserService {
     ]);
 
     return tokens;
+  }
+
+  private getUserJWTPayload(user: User): UserTokenPayloadType {
+    return {
+      userId: user.id,
+      role: user.role as UserRolesType
+    }
   }
 }

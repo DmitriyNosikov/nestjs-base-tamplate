@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 
-import { getDbOPtions } from '@libs/helpers';
+import { getDbOPtions } from '@core/libs/helpers';
 
 import { ENV_FILE_PATH } from '@core/app.constant';
 

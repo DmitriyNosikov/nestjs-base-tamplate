@@ -12,10 +12,10 @@ import {
 
 import { USER_ROUTES } from './user.constant';
 
-import { JWTAuthGuard, JWTRefreshGuard, UserLocalAuthGuard } from '@libs/guards';
-import { fillDTO } from '@libs/helpers';
-import { RefreshTokenPayloadType } from '@libs/types';
-import { RequestWithPayloadInterface } from '@libs/interfaces';
+import { JWTAuthGuard, JWTRefreshGuard, UserLocalAuthGuard } from '@core/guards';
+import { fillDTO } from '@core/libs/helpers';
+import { RefreshTokenPayloadType } from '@core/types';
+import { RequestWithUserPayloadInterface } from '@core/interfaces';
 
 
 import { CreateUserDTO } from './dto/create-user.dto';
@@ -24,6 +24,7 @@ import { CreateUserAccessTokenRDO } from './rdo/create-user-access-token.rdo';
 
 import { User } from '@models/index';
 import { UserService } from './user.service';
+
 @Controller(USER_ROUTES.BASE)
 export class UserController {
   constructor(
@@ -33,7 +34,7 @@ export class UserController {
   @Post(USER_ROUTES.LOGIN)
   @UseGuards(UserLocalAuthGuard)
   public async login(
-    @Req() { user: loggedUser }: RequestWithPayloadInterface<User>,
+    @Req() { user: loggedUser }: RequestWithUserPayloadInterface<User>,
   ) {
     const tokens = await this.userService.createToken(loggedUser.id);
 
@@ -46,7 +47,7 @@ export class UserController {
   @Post(USER_ROUTES.TOKEN_REFRESH)
   @UseGuards(JWTRefreshGuard)
   public async refreshToken(
-    @Req() { user: refreshTokenPayload }: RequestWithPayloadInterface<RefreshTokenPayloadType>
+    @Req() { user: refreshTokenPayload }: RequestWithUserPayloadInterface<RefreshTokenPayloadType>
   ): Promise<CreateUserAccessTokenRDO> {
     const tokens = await this.userService.refreshToken(refreshTokenPayload);
 
@@ -88,7 +89,6 @@ export class UserController {
 
   @Post(USER_ROUTES.CREATE)
   @UseGuards(JWTAuthGuard)
-  // @UseInterceptors(InjectCompanyIdInterceptor)
   public async createUser(
     @Body() userData: CreateUserDTO,
   ): Promise<User | void> {

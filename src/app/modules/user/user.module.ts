@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { JwtModule } from '@nestjs/jwt';
 
-import { BCryptHasher, getJWTOptions } from '@libs/helpers';
-import { JWTAccessStrategy, JWTRefreshStrategy, UserLocalStrategy } from '@libs/strategies';
+import { BCryptHasher } from '@core/libs/helpers';
+import { JWTAccessStrategy, JWTRefreshStrategy, UserLocalStrategy } from '@core/strategies';
+import { getJWTOptions } from '@core/config/jwt/jwt';
 
 import { User } from '@models/index';
 import { UserController } from './user.controller';
