@@ -4,10 +4,10 @@ import { ConfigService } from '@nestjs/config';
 
 import { ConfigEnum, ConfigEnvironment } from '@core/config';
 
-import { RequestLoggerInterceptor } from '@core/libs/interceptors'
+import { RequestLoggerInterceptor } from '@core/interceptors'
   ;
 import { AppModule } from '@core/app.module';
-import { GLOBAL_API_PREFIX } from '@core/app.constant';
+import { APP_DEFAULT_PORT, GLOBAL_API_PREFIX } from '@core/app.constant';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -43,7 +43,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new RequestLoggerInterceptor());
 
   // Запуск сервера
-  await app.listen(port ?? 3000);
+  await app.listen(port ?? APP_DEFAULT_PORT);
 
   Logger.log(`🚀 Application is running on: http://${host}:${port}/${GLOBAL_API_PREFIX}`);
 }
