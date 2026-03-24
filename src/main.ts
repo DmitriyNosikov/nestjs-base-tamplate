@@ -3,7 +3,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { ConfigEnum, ConfigEnvironment } from '@config/index';
-import { GLOBAL_API_PREFIX, SWAGGER_DOCS_PATH } from '@core/app.constant';
+import { GLOBAL_API_PREFIX, SwaggerConfig } from '@core/app.constant';
 
 import { RequestLoggerInterceptor } from '@common/interceptors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -21,6 +21,8 @@ async function bootstrap() {
   const corsEnabledURLs = configService
     .get(`${ConfigEnvironment.APP}.${ConfigEnum.CORS_ACCESS_ENABLED_URLS}`)
     .split(', ');
+
+  const { DOCS_PREFIX, JSON_DOCUMENT_URL, YAML_DOCUMENT_URL } = SwaggerConfig;
 
   // Устанавливаем глобальный префикс для API
   app.setGlobalPrefix(GLOBAL_API_PREFIX);
@@ -60,14 +62,18 @@ async function bootstrap() {
     что уменьшает время инициализации приложения
     https://docs.nestjs.com/openapi/introduction
   */
-  const swaggerDocumentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
+  const swaggerDocumentFactory = () => SwaggerModule.createDocument(app, swaggerConfig, {
+    ignoreGlobalPrefix: true
+  });
 
-  SwaggerModule.setup(SWAGGER_DOCS_PATH, app, swaggerDocumentFactory);
+  SwaggerModule.setup(DOCS_PREFIX, app, swaggerDocumentFactory);
 
   // Запуск сервера (дефолтный порт указан в конфигурации приложения)
   await app.listen(port);
 
   Logger.log(`🚀 Приложение запущено на: http://${host}:${port}/${GLOBAL_API_PREFIX}`);
-  Logger.log(`🔗 Swagger документация доступна по адресу: http://${host}:${port}/${SWAGGER_DOCS_PATH}`);
+  Logger.log(`🔗 Swagger (UI) документация доступна по адресу: http://${host}:${port}/${DOCS_PREFIX}`);
+  Logger.log(`🔗 Swagger (JSON): http://${host}:${port}/${JSON_DOCUMENT_URL}`);
+  Logger.log(`🔗 Swagger (YAML): http://${host}:${port}/${YAML_DOCUMENT_URL}`);
 }
 bootstrap();

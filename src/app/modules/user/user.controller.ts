@@ -24,6 +24,7 @@ import { CreateUserAccessTokenRDO } from './rdo/create-user-access-token.rdo';
 
 import { User } from '@models/index';
 import { UserService } from './user.service';
+import { UpdateUserRDO } from './rdo/update-user.rdo';
 
 @Controller(USER_ROUTES.BASE)
 export class UserController {
@@ -35,7 +36,7 @@ export class UserController {
   @UseGuards(UserLocalAuthGuard)
   public async login(
     @Req() { user: loggedUser }: IRequestWithUserPayload<User>,
-  ) {
+  ): Promise<CreateUserRDO & CreateUserAccessTokenRDO> {
     const tokens = await this.userService.createToken(loggedUser.id);
 
     return {
@@ -56,7 +57,9 @@ export class UserController {
 
   @Get(USER_ROUTES.GET)
   @UseGuards(JWTAuthGuard)
-  public async getUserById(@Param('userId') userId: number): Promise<User> {
+  public async getUserById(
+    @Param('userId') userId: number
+  ): Promise<CreateUserRDO> {
     const user = await this.userService.getUserById(userId);
 
     return user;
@@ -67,7 +70,7 @@ export class UserController {
   public async updateUser(
     @Param('userId') userId: number,
     @Body() updateData: Partial<CreateUserDTO>,
-  ): Promise<User> {
+  ): Promise<UpdateUserRDO> {
     const updatedUser = await this.userService.updateUser(userId, updateData);
 
     return updatedUser;
@@ -75,13 +78,15 @@ export class UserController {
 
   @Delete(USER_ROUTES.DELETE)
   @UseGuards(JWTAuthGuard)
-  public async deleteUser(@Param('userId') userId: number): Promise<void> {
+  public async deleteUser(
+    @Param('userId') userId: number
+  ): Promise<void> {
     await this.userService.deleteUser(userId);
   }
 
   @Get(USER_ROUTES.INDEX)
   @UseGuards(JWTAuthGuard)
-  public async getUsersList(): Promise<User[] | null> {
+  public async getUsersList(): Promise<CreateUserRDO[] | null> {
     const users = await this.userService.index();
 
     return users;
@@ -91,10 +96,8 @@ export class UserController {
   @UseGuards(JWTAuthGuard)
   public async createUser(
     @Body() userData: CreateUserDTO,
-  ): Promise<User | void> {
-    const newUser = await this.userService.createUser({
-      ...userData,
-    });
+  ): Promise<CreateUserRDO | void> {
+    const newUser = await this.userService.createUser(userData);
 
     return newUser;
   }

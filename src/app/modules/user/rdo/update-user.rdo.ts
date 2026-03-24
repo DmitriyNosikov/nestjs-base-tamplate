@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-export class CreateUserRDO {
+export class UpdateUserRDO {
   @Expose()
   @ApiProperty({
     description: 'ID пользователя',
@@ -16,6 +16,14 @@ export class CreateUserRDO {
     example: '2021-01-01'
   })
   createdAt!: string;
+
+  @Expose()
+  @ApiProperty({
+    description: 'Дата изменения данных пользователя',
+    type: String,
+    example: '2021-01-01'
+  })
+  updatedAt!: string;
 
   @Expose()
   @ApiProperty({

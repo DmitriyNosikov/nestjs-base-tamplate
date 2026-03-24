@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
 
 import { jwtConfig } from '@core/config';
-import { BCryptHasher, getJWTExpirationDate } from '@core/libs/helpers';
+import { BCryptHasher, fillDTO, getJWTExpirationDate } from '@core/libs/helpers';
 import { RefreshTokenPayloadType, UserRolesType, UserRolesTypeEnum, UserTokenPayloadType } from '@core/common/types';
 
 import { RefreshTokenService } from '@modules/refresh-token/refresh-token.service';
@@ -13,7 +13,10 @@ import { UserRepository } from './user.repository';
 
 import { CreateUserDTO } from './dto/create-user.dto';
 import { LoginUserDTO } from './dto/login-user.dto';
+
 import { CreateUserAccessTokenRDO } from './rdo/create-user-access-token.rdo';
+import { CreateUserRDO } from './rdo/create-user.rdo';
+import { UpdateUserRDO } from './rdo/update-user.rdo';
 
 @Injectable()
 export class UserService {
@@ -32,7 +35,9 @@ export class UserService {
     private readonly hasher: BCryptHasher,
   ) { }
 
-  public async createUser(userData: CreateUserDTO) {
+  public async createUser(
+    userData: CreateUserDTO
+  ): Promise<CreateUserRDO> {
     const isUserExists = await this.userRepository.findByLogin(userData.login);
 
     if (isUserExists) {
@@ -49,16 +54,20 @@ export class UserService {
 
     const newUser = await this.userRepository.create(newUserData);
 
-    return newUser;
+    return fillDTO(CreateUserRDO, newUser.toJSON());
   }
 
-  public async index() {
+  public async index(): Promise<CreateUserRDO[] | null> {
     const users = await this.userRepository.index();
+    const mappedUsers = users.map((user) => fillDTO(CreateUserRDO, user.toJSON()));
 
-    return users;
+    return mappedUsers;
   }
 
-  public async updateUser(userId: number, updateData: Partial<CreateUserDTO>) {
+  public async updateUser(
+    userId: number,
+    updateData: Partial<CreateUserDTO>
+  ): Promise<UpdateUserRDO> {
     const isUserExists = await this.userRepository.findById(userId);
 
     if (!isUserExists) {
@@ -67,21 +76,21 @@ export class UserService {
 
     const updatedUser = await this.userRepository.update(userId, updateData);
 
-    return updatedUser;
+    return fillDTO(UpdateUserRDO, updatedUser.toJSON());
   }
 
   public async deleteUser(userId: number): Promise<void> {
     await this.userRepository.delete(userId);
   }
 
-  public async getUserById(userId: number) {
+  public async getUserById(userId: number): Promise<CreateUserRDO> {
     const user = await this.userRepository.findById(userId);
 
     if (!user) {
       throw new Error(`Пользователь с id ${userId} не найден`);
     }
 
-    return user
+    return fillDTO(CreateUserRDO, user.toJSON());
   }
 
   public async authorize(dto: LoginUserDTO): Promise<User> {
