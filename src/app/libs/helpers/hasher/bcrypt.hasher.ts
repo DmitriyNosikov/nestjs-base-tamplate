@@ -1,11 +1,11 @@
 
 import { genSalt, hash, compare } from 'bcrypt';
 
-import { HasherI } from '../../../interfaces';
+import { IHasher } from '@common/interfaces';
 
 const SALT_ROUNDS = 10;
 
-export class BCryptHasher implements HasherI {
+export class BCryptHasher implements IHasher {
   async getHash(value: string): Promise<string> {
     const salt = await genSalt(SALT_ROUNDS);
 

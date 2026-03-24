@@ -4,7 +4,7 @@ import { ConfigType } from '@nestjs/config';
 
 import { jwtConfig } from '@core/config';
 import { BCryptHasher, getJWTExpirationDate } from '@core/libs/helpers';
-import { RefreshTokenPayloadType, UserRolesType, UserRolesTypeEnum, UserTokenPayloadType } from '@core/types';
+import { RefreshTokenPayloadType, UserRolesType, UserRolesTypeEnum, UserTokenPayloadType } from '@core/common/types';
 
 import { RefreshTokenService } from '@modules/refresh-token/refresh-token.service';
 

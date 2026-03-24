@@ -5,7 +5,7 @@ import { jwtConfig } from '@core/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { RefreshTokenPayloadType } from '@core/types'
+import { RefreshTokenPayloadType } from '@core/common/types'
 import { RefreshTokenService } from '@modules/refresh-token/refresh-token.service';
 import { TokenNotExistsException } from '@modules/refresh-token/exceptions/token-not-exists.exception';
 

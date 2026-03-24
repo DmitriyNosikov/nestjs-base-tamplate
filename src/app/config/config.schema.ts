@@ -6,14 +6,12 @@ import { ConfigMessages, DEFAULT_PORT, PORT } from './config.constant';
 export const ConfigEnum = {
   HOST: 'host',
   PORT: 'port',
-  FRONT_URL: 'frontUrl',
   CORS_ACCESS_ENABLED_URLS: 'corsAccessEnabledURLs',
 } as const;
 
 export interface ConfigInterface {
   [ConfigEnum.HOST]: string;
   [ConfigEnum.PORT]: number;
-  [ConfigEnum.FRONT_URL]: string;
   [ConfigEnum.CORS_ACCESS_ENABLED_URLS]: string;
 }
 
@@ -28,9 +26,6 @@ export class ConfigSchema implements ConfigInterface {
   @Min(PORT.MIN)
   @IsOptional()
   port: number = DEFAULT_PORT;
-
-  @IsString()
-  frontUrl: string;
 
   @IsString()
   corsAccessEnabledURLs: string;

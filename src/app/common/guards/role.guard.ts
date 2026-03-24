@@ -21,23 +21,23 @@ export const ROLES_METADATA_KEY = Roles;
  * https://docs.nestjs.com/fundamentals/execution-context#reflection-and-metadata
  */
 export class RoleGuard implements CanActivate {
-    constructor(private readonly reflector: Reflector){}
+    constructor(private readonly reflector: Reflector) { }
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         let roles = this.reflector.get<string | string[]>(ROLES_METADATA_KEY, context.getHandler());
         const request = context.switchToHttp().getRequest();
 
-        if(!roles) {
+        if (!roles) {
             throw new Error(`Route ${request.url} protected by roles policy, but roles Metadata wasn't set.`);
         }
 
-        if(!Array.isArray(roles)) {
+        if (!Array.isArray(roles)) {
             roles = [roles];
         }
 
         const user = request.user;
 
-        if(!user.role || !roles.includes(user.role)) {
+        if (!user.role || !roles.includes(user.role)) {
             throw new UnauthorizedException('Route isn`t exists or user haven`t access to this');
         }
 

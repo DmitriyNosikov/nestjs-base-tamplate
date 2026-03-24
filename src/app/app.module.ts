@@ -2,16 +2,15 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 
-import { getDbOPtions } from '@core/config';
-
-import { ENV_FILE_PATH } from '@core/app.constant';
-
 import {
+  getDbOPtions,
   ConfigEnvironment,
   appConfig,
   jwtConfig,
   pgConfig
-} from '@core/config/';
+} from '@config/index';
+
+import { ENV_FILE_PATH } from '@core/app.constant';
 
 import { UserModule } from '@modules/user/user.module';
 

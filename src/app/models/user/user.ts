@@ -6,7 +6,7 @@ import {
 } from 'sequelize';
 import { Column, Model, Table } from 'sequelize-typescript';
 
-import { UserRolesType, UserRolesTypeEnum } from '@core/types';
+import { UserRolesType, UserRolesTypeEnum } from '@core/common/types';
 
 export interface UserModelI extends Model<
   InferAttributes<UserModelI>,

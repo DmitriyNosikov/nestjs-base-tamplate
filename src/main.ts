@@ -2,12 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { ConfigEnum, ConfigEnvironment } from '@core/config';
+import { ConfigEnum, ConfigEnvironment } from '@config/index';
 
-import { RequestLoggerInterceptor } from '@core/interceptors'
-  ;
+import { RequestLoggerInterceptor } from '@common/interceptors';
 import { AppModule } from '@core/app.module';
-import { APP_DEFAULT_PORT, GLOBAL_API_PREFIX } from '@core/app.constant';
+import { GLOBAL_API_PREFIX } from '@core/app.constant';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,7 +14,7 @@ async function bootstrap() {
 
   const host = configService.get(`${ConfigEnvironment.APP}.${ConfigEnum.HOST}`);
   const port = configService.get(`${ConfigEnvironment.APP}.${ConfigEnum.PORT}`);
-  const frontUrl = configService.get(`${ConfigEnvironment.APP}.${ConfigEnum.FRONT_URL}`);
+
   const corsEnabledURLs = configService
     .get(`${ConfigEnvironment.APP}.${ConfigEnum.CORS_ACCESS_ENABLED_URLS}`)
     .split(', ');
@@ -24,7 +23,6 @@ async function bootstrap() {
   app.enableCors({
     credentials: true,
     origin: [
-      frontUrl,
       corsEnabledURLs
     ]
   }); // Подключаем работу с CORS
@@ -42,8 +40,8 @@ async function bootstrap() {
   // Логирование входящих запросов
   app.useGlobalInterceptors(new RequestLoggerInterceptor());
 
-  // Запуск сервера
-  await app.listen(port ?? APP_DEFAULT_PORT);
+  // Запуск сервера (дефолтный порт указан в конфигурации приложения)
+  await app.listen(port);
 
   Logger.log(`🚀 Application is running on: http://${host}:${port}/${GLOBAL_API_PREFIX}`);
 }

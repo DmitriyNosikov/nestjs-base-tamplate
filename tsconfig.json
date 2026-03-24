@@ -21,14 +21,20 @@
       "@core/*": [
         "./src/app/*"
       ],
+      "@common/*": [
+        "./src/app/common/*"
+      ],
+      "@libs/*": [
+        "src/app/libs/*"
+      ],
+      "@config/*": [
+        "./src/app/config/*"
+      ],
       "@models/*": [
         "./src/app/models/*"
       ],
       "@modules/*": [
         "./src/app/modules/*"
-      ],
-      "@libs/*": [
-        "src/app/libs/*"
       ]
     }
   }

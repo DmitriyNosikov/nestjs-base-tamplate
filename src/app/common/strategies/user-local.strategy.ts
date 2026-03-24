@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport'
 import { Strategy } from 'passport-local';
 
 import { User } from '@models/index';
-import { UserService } from '../modules/user/user.service';
+import { UserService } from '../../modules/user/user.service';
 
 const USERNAME_FIELD_NAME = 'login';
 
