@@ -14,11 +14,15 @@ export class RequestLoggerInterceptor implements NestInterceptor {
       showHeaders: false,
       showBody: true,
     }
-  ){}
+  ) { }
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-    const logger = new Logger('Request Guard');
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler
+  ): Observable<unknown> {
+    const logger = new Logger('Request Logger Interceptor');
     const request = context.switchToHttp().getRequest();
+    const requestStartTime = Date.now();
 
     if (this.options.showRequestURI) {
       logger.log(`Request: ${request.method} ${request.url}`);
@@ -29,11 +33,19 @@ export class RequestLoggerInterceptor implements NestInterceptor {
       logger.log(request.rawHeaders);
     }
 
-    if(this.options.showBody && request.body && Object.keys(request.body).length > 0) {
+    if (this.options.showBody && request.body && Object.keys(request.body).length > 0) {
       logger.log('Request body:');
       logger.log(request.body);
     }
 
-    return next.handle();
+    next
+      .handle()
+      .pipe(
+        tap(() => {
+          const requestDuration = Date.now() - requestStartTime;
+
+          logger.log(`Request duration: ${requestDuration}ms`);
+        })
+      );
   }
 }
