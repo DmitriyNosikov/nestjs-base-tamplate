@@ -38,8 +38,7 @@ export class RequestLoggerInterceptor implements NestInterceptor {
       logger.log(request.body);
     }
 
-    next
-      .handle()
+    return next.handle()
       .pipe(
         tap(() => {
           const requestDuration = Date.now() - requestStartTime;
