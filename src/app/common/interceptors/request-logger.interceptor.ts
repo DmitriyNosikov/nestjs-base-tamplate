@@ -1,5 +1,5 @@
 import { CallHandler, ExecutionContext, Logger, NestInterceptor } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 type RequestLoggerInterceptorOptions = {
   showRequestURI: boolean
