@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 
 import {
-  getDbOPtions,
+  getSequelizeOptions,
   ConfigEnvironment,
   appConfig,
   jwtConfig,
@@ -26,7 +26,7 @@ import { UserModule } from '@modules/user/user.module';
 
     // Конфигурация подключения к БД
     SequelizeModule.forRootAsync(
-      getDbOPtions(ConfigEnvironment.PG)
+      getSequelizeOptions(ConfigEnvironment.PG)
     ),
 
     // Подключаем модули
