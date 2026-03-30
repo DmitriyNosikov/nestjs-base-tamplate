@@ -1,6 +1,11 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { UnauthorizedException } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 
 export function ApiDeleteUser(summary: string) {
   return applyDecorators(
@@ -16,11 +21,6 @@ export function ApiDeleteUser(summary: string) {
       status: 200,
       description: 'Пользователь успешно удален',
       type: null
-    }),
-    ApiResponse({
-      status: 401,
-      description: 'Некорректный токен доступа пользователя',
-      type: UnauthorizedException
     }),
     ApiUnauthorizedResponse({ description: 'Некорректный токен доступа пользователя' }),
   );

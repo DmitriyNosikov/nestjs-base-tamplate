@@ -1,22 +1,39 @@
-import { ConflictException, HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
+import { Order, WhereOptions } from 'sequelize';
 
 import { jwtConfig } from '@core/config';
 import { BCryptHasher, fillDTO, getJWTExpirationDate } from '@core/libs/helpers';
-import { RefreshTokenPayloadType, UserRolesType, UserRolesTypeEnum, UserTokenPayloadType } from '@core/common/types';
+import {
+  RefreshTokenPayloadType,
+  UserRolesType,
+  UserRolesTypeEnum,
+  UserTokenPayloadType
+} from '@core/common/types';
 
 import { RefreshTokenService } from '@modules/refresh-token/refresh-token.service';
 
-import { User } from '@models/index';
+import { IUserModel, User } from '@models/index';
 import { UserRepository } from './user.repository';
 
 import { CreateUserDTO } from './dto/create-user.dto';
 import { LoginUserDTO } from './dto/login-user.dto';
-
 import { CreateUserAccessTokenRDO } from './rdo/create-user-access-token.rdo';
 import { CreateUserRDO } from './rdo/create-user.rdo';
 import { UpdateUserRDO } from './rdo/update-user.rdo';
+import { IndexUserDTO } from './dto/index-user.dto';
+import { UserPaginationOptionsType } from './types/user-pagination-options.type';
+import { PaginatedUsersType } from './types/paginated-users.type';
 
 @Injectable()
 export class UserService {
@@ -34,6 +51,49 @@ export class UserService {
     @Inject('Hasher')
     private readonly hasher: BCryptHasher,
   ) { }
+
+  public async paginatedIndex(
+    query: IndexUserDTO
+  ): Promise<PaginatedUsersType> {
+    const { page, limit } = query;
+
+    // Подготавливаем запрос (форматируем) для БД
+    const paginationOptions: UserPaginationOptionsType = this.buildPaginationOptions(query);
+
+    const { rows, count } = await this.userRepository.paginatedIndex(paginationOptions);
+
+    // Форматируем данные для ответа
+    const mappedUsers = rows
+      .map((user) => fillDTO(CreateUserRDO, user));
+    const totalPages = Math.ceil(count / limit);
+
+    const paginatedResponse: PaginatedUsersType = {
+      data: mappedUsers,
+      total: count,
+      itemsPerPage: limit,
+      currentPage: page,
+      totalPages
+    };
+
+    return paginatedResponse;
+  }
+
+  public async index(): Promise<CreateUserRDO[] | null> {
+    const users = await this.userRepository.index();
+    const mappedUsers = users.map((user) => fillDTO(CreateUserRDO, user.toJSON()));
+
+    return mappedUsers;
+  }
+
+  public async getUserById(userId: number): Promise<CreateUserRDO> {
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      throw new Error(`Пользователь с id ${userId} не найден`);
+    }
+
+    return fillDTO(CreateUserRDO, user.toJSON());
+  }
 
   public async createUser(
     userData: CreateUserDTO
@@ -57,13 +117,6 @@ export class UserService {
     return fillDTO(CreateUserRDO, newUser.toJSON());
   }
 
-  public async index(): Promise<CreateUserRDO[] | null> {
-    const users = await this.userRepository.index();
-    const mappedUsers = users.map((user) => fillDTO(CreateUserRDO, user.toJSON()));
-
-    return mappedUsers;
-  }
-
   public async updateUser(
     userId: number,
     updateData: Partial<CreateUserDTO>
@@ -81,16 +134,6 @@ export class UserService {
 
   public async deleteUser(userId: number): Promise<void> {
     await this.userRepository.delete(userId);
-  }
-
-  public async getUserById(userId: number): Promise<CreateUserRDO> {
-    const user = await this.userRepository.findById(userId);
-
-    if (!user) {
-      throw new Error(`Пользователь с id ${userId} не найден`);
-    }
-
-    return fillDTO(CreateUserRDO, user.toJSON());
   }
 
   public async authorize(dto: LoginUserDTO): Promise<User> {
@@ -162,5 +205,45 @@ export class UserService {
       userId: user.id,
       role: user.role as UserRolesType
     }
+  }
+
+  private buildWhereOptions(
+    query: IndexUserDTO
+  ): WhereOptions<IUserModel> {
+    const where: WhereOptions<IUserModel> = {};
+
+    if (query.login) {
+      where.login = query.login;
+    }
+
+    return where;
+  }
+
+  private buildOrderOptions(
+    query: IndexUserDTO
+  ): Order {
+    const order: Order = [];
+
+    if (query.sortBy) {
+      order.push([query.sortBy, query.sortDirection]);
+    }
+
+    return order;
+  }
+
+  private buildPaginationOptions(
+    query: IndexUserDTO
+  ): UserPaginationOptionsType {
+    const where = this.buildWhereOptions(query);
+    const order = this.buildOrderOptions(query);
+
+    const offset = (query.page - 1) * query.limit;
+
+    return {
+      where,
+      order,
+      limit: query.limit,
+      offset
+    };
   }
 }

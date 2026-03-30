@@ -4,4 +4,7 @@ export { UserRolesType, UserRolesTypeEnum } from './roles.type';
 
 export { TokenType } from './token/token.type';
 export { RefreshTokenPayloadType, UserTokenPayloadType } from './token/token-payload.type';
+export { RequestWithUserPayloadType } from './request-with-payload.type';
+export { PaginationOptionsType } from './pagination-options.type';
+export { PaginatedResponseType } from './paginated-response.type';
 export { SortDirectionTypeEnum } from './sort-direction.type';

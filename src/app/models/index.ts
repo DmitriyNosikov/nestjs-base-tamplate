@@ -1,2 +1,2 @@
-export { User, UserModelI } from './user/user';
-export { RefreshToken, RefreshTokenModelI } from './refresh-token/refresh-token';
+export { User, IUserModel } from './user/user';
+export { RefreshToken, IRefreshTokenModel } from './refresh-token/refresh-token';

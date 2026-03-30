@@ -1,9 +1,9 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes } from 'sequelize';
 import { Column, DataType, Model, Table } from 'sequelize-typescript';
 
-export interface RefreshTokenModelI extends Model<
-  InferAttributes<RefreshTokenModelI>,
-  InferCreationAttributes<RefreshTokenModelI>
+export interface IRefreshTokenModel extends Model<
+  InferAttributes<IRefreshTokenModel>,
+  InferCreationAttributes<IRefreshTokenModel>
 > {
   id?: CreationOptional<number>;
   tokenId: string;
@@ -11,17 +11,17 @@ export interface RefreshTokenModelI extends Model<
 }
 
 @Table({ modelName: 'RefreshTokens' })
-export class RefreshToken extends Model<RefreshTokenModelI> {
-    @Column({
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    })
-    id?: CreationOptional<number>;
+export class RefreshToken extends Model<IRefreshTokenModel> {
+  @Column({
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  })
+  id?: CreationOptional<number>;
 
-    @Column({ type: DataType.STRING, allowNull: false })
-    tokenId: string;
+  @Column({ type: DataType.STRING, allowNull: false })
+  tokenId: string;
 
-    @Column({ type: DataType.DATE, allowNull: false })
-    expiresIn: Date;
+  @Column({ type: DataType.DATE, allowNull: false })
+  expiresIn: Date;
 }

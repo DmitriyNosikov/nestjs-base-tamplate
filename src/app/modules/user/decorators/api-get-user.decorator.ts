@@ -1,4 +1,4 @@
-import { applyDecorators, UnauthorizedException } from '@nestjs/common';
+import { applyDecorators } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ApiOperation } from '@nestjs/swagger';
 import { ApiParam } from '@nestjs/swagger';
@@ -18,11 +18,6 @@ export function ApiGetUser(summary: string) {
       status: 200,
       description: 'Получение пользователя по id',
       type: CreateUserRDO
-    }),
-    ApiResponse({
-      status: 401,
-      description: 'Некорректный токен доступа пользователя',
-      type: UnauthorizedException
     }),
     ApiUnauthorizedResponse({ description: 'Некорректный токен доступа пользователя' }),
   );

@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from '@nestjs/common';
 import { Expose } from 'class-transformer';
 
-import { IPaginatedResponse } from '@common/interfaces';
+import { PaginatedResponseType } from '../types/paginated-response.type';
+
 
 /*
   Т.к Swagger для построения документации необходимо
@@ -14,8 +15,8 @@ import { IPaginatedResponse } from '@common/interfaces';
 */
 export function PaginationResponseSwaggerRDO<T>(
   itemType: Type<T>,
-): Type<IPaginatedResponse<T>> {
-  class PaginatedResponse implements IPaginatedResponse<T> {
+): Type<PaginatedResponseType<T>> {
+  class PaginatedResponse {
     @Expose()
     @ApiProperty({ type: () => itemType, isArray: true })
     data!: T[];
@@ -26,7 +27,7 @@ export function PaginationResponseSwaggerRDO<T>(
 
     @Expose()
     @ApiProperty({ type: Number })
-    totalPages!: number;
+    itemsPerPage!: number;
 
     @Expose()
     @ApiProperty({ type: Number })
@@ -34,7 +35,7 @@ export function PaginationResponseSwaggerRDO<T>(
 
     @Expose()
     @ApiProperty({ type: Number })
-    itemsPerPage!: number;
+    totalPages!: number;
   }
 
   // Nest Swagger использует имя класса как ключ схемы.

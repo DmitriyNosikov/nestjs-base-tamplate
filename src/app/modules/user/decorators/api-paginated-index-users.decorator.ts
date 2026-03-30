@@ -1,67 +1,80 @@
-import { PaginationResponseSwaggerRDO } from '@common/rdo/pagination-response.rdo';
-import { applyDecorators, UnauthorizedException } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
-
+import { applyDecorators } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 import { CreateUserRDO } from '../rdo/create-user.rdo';
-import { SortDirectionTypeEnum } from '@common/types';
+import { SortDirectionTypeEnum } from '@core/common/types';
 
-export function ApiIndexUsers(summary: string) {
+export function ApiPaginatedIndexUsers(summary: string) {
   return applyDecorators(
     ApiOperation({ summary }),
+    ApiBearerAuth('JWT-ACCESS'),
     ApiQuery({
       name: 'id',
       description: 'ID пользователя',
       type: Number,
-      example: 1
+      example: 1,
+      required: false
     }),
     ApiQuery({
       name: 'login',
       description: 'Логин пользователя',
       type: String,
-      example: 'Neo'
+      example: 'Neo',
+      required: false
     }),
     ApiQuery({
       name: 'createdAt',
       description: 'Дата создания пользователя',
       type: Date,
-      example: new Date()
+      example: new Date(),
+      required: false
     }),
     ApiQuery({
       name: 'sortDirection',
       description: 'Направление сортировки',
       type: String,
       enum: SortDirectionTypeEnum,
-      example: 'DESC'
+      example: 'DESC',
+      required: false
     }),
     ApiQuery({
       name: 'sortBy',
       description: 'Поле сортировки',
       type: String,
-      example: 'createdAt'
+      example: 'createdAt',
+      required: false
     }),
     ApiQuery({
       name: 'returnRelations',
       description: 'Возвращать ли связанные данные',
       type: Boolean,
-      example: true
+      example: true,
+      required: false
     }),
     ApiQuery({
       name: 'page',
       description: 'Номер страницы',
       type: Number,
-      example: 1
+      example: 1,
+      required: false
     }),
     ApiQuery({
       name: 'limit',
       description: 'Количество пользователей на странице',
       type: Number,
-      example: 10
+      example: 10,
+      required: false
     }),
     ApiResponse({
       status: 200,
-      description: 'Список пользователей успешно получен',
-      type: PaginationResponseSwaggerRDO(CreateUserRDO)
+      description: 'Список пользователей',
+      type: [CreateUserRDO]
     }),
-    ApiUnauthorizedResponse({ description: 'Некорректный токен доступа пользователя' }),
+    ApiUnauthorizedResponse({ description: 'Некорректный токен доступа пользователя' })
   );
 }

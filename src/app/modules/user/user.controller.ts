@@ -6,39 +6,40 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
-  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 
-import {
-  ApiParam,
-  ApiResponse,
-  PartialType
-} from '@nestjs/swagger';
-
 import { USER_ROUTES } from './user.constant';
 
-import { JWTAuthGuard, JWTRefreshGuard, UserLocalAuthGuard } from '@core/common/guards';
-import { fillDTO } from '@core/libs/helpers';
-import { RefreshTokenPayloadType } from '@core/common/types';
-import { IRequestWithUserPayload } from '@core/common/interfaces';
+import { User } from '@models/index';
+import { UserService } from './user.service';
 
+import {
+  JWTAuthGuard,
+  JWTRefreshGuard,
+  UserLocalAuthGuard,
+  RoleGuard
+} from '@common/guards';
+import { RefreshTokenPayloadType, UserRolesTypeEnum, RequestWithUserPayloadType } from '@common/types';
+import { Roles } from '@common/decorators/roles.decorator';
+import { fillDTO } from '@libs/helpers';
 
 import { CreateUserDTO } from './dto/create-user.dto';
 import { CreateUserRDO } from './rdo/create-user.rdo';
 import { CreateUserAccessTokenRDO } from './rdo/create-user-access-token.rdo';
-
-import { User } from '@models/index';
-import { UserService } from './user.service';
 import { UpdateUserRDO } from './rdo/update-user.rdo';
+import { PaginatedUsersType } from './types/paginated-users.type';
+
 import { ApiUserLogin } from './decorators/api-user-login.decorator';
 import { ApiUserRefreshToken } from './decorators/api-user-refresh-token.decorator';
 import { ApiGetUser } from './decorators/api-get-user.decorator';
 import { ApiUpdateUser } from './decorators/api-update-user.decorator';
 import { ApiDeleteUser } from './decorators/api-delete-user.decorator';
-import { ApiIndexUsers } from './decorators/api-paginated-index-users.decorator';
+import { ApiPaginatedIndexUsers } from './decorators/api-paginated-index-users.decorator';
 import { ApiCreateUser } from './decorators/api-create-user.decorator';
+import { IndexUserDTO } from './dto/index-user.dto';
 
 @Controller(USER_ROUTES.BASE)
 export class UserController {
@@ -50,7 +51,7 @@ export class UserController {
   @UseGuards(UserLocalAuthGuard)
   @ApiUserLogin('Авторизация пользователя')
   public async login(
-    @Req() { user: loggedUser }: IRequestWithUserPayload<User>,
+    @Req() { user: loggedUser }: RequestWithUserPayloadType<User>,
   ): Promise<CreateUserRDO & CreateUserAccessTokenRDO> {
     const tokens = await this.userService.createToken(loggedUser.id);
 
@@ -64,7 +65,7 @@ export class UserController {
   @UseGuards(JWTRefreshGuard)
   @ApiUserRefreshToken('Обновление токена доступа пользователя')
   public async refreshToken(
-    @Req() { user: refreshTokenPayload }: IRequestWithUserPayload<RefreshTokenPayloadType>
+    @Req() { user: refreshTokenPayload }: RequestWithUserPayloadType<RefreshTokenPayloadType>
   ): Promise<CreateUserAccessTokenRDO> {
     const tokens = await this.userService.refreshToken(refreshTokenPayload);
 
@@ -95,7 +96,8 @@ export class UserController {
   }
 
   @Delete(USER_ROUTES.DELETE)
-  @UseGuards(JWTAuthGuard)
+  @Roles(UserRolesTypeEnum.ADMIN)
+  @UseGuards(JWTAuthGuard, RoleGuard)
   @ApiDeleteUser('Удаление пользователя')
   public async deleteUser(
     @Param('userId') userId: number
@@ -105,12 +107,14 @@ export class UserController {
 
   @Get(USER_ROUTES.INDEX)
   @UseGuards(JWTAuthGuard)
-  // TODO: Заменить на ApiPaginatedIndexUsers
-  @ApiIndexUsers('Получение списка пользователей')
-  public async getUsersList(): Promise<CreateUserRDO[] | null> {
-    const users = await this.userService.index();
+  @ApiPaginatedIndexUsers('Получение пагинированного списка пользователей')
+  public async getUsersList(
+    // TODO: Проверить передачу "лишних" параметров в query
+    @Query() query: IndexUserDTO
+  ): Promise<PaginatedUsersType> {
+    const paginatedUsers = await this.userService.paginatedIndex(query);
 
-    return users;
+    return paginatedUsers;
   }
 
   @Post(USER_ROUTES.CREATE)

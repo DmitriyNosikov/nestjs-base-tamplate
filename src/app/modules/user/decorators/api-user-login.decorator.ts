@@ -1,4 +1,4 @@
-import { applyDecorators, UnauthorizedException } from '@nestjs/common';
+import { applyDecorators } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiUnauthorizedResponse, IntersectionType } from '@nestjs/swagger';
 import { LoginUserDTO } from '../dto/login-user.dto';
 import { CreateUserRDO } from '../rdo/create-user.rdo';

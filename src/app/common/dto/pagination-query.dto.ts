@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsObject, IsOptional, Max, Min } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { TransformValueToBoolean } from '../decorators/transform-value-to-boolean.decorator';
-import { TransformValueToNumber } from '../decorators/tranfsorm-value-to-number.decorator';
-import { IPaginationQuery } from '../interfaces/pagination-query.interface';
+import { TransformValueToNumber } from '../decorators/transform-value-to-number.decorator';
+import { SortDirectionTypeEnum } from '../types';
+import { SortDirectionType } from '../types/sort-direction.type';
 
 export const PaginationLimits = {
   LIMIT: {
@@ -15,14 +16,17 @@ export const PaginationLimits = {
   }
 };
 
-export class PaginationQueryDTO implements IPaginationQuery {
+// Базовый DTO для пагинации
+export class PaginationQueryDTO {
   @IsOptional()
   @IsNumber()
   @Min(PaginationLimits.PAGE.MIN)
   @ApiProperty({
     description: 'Номер страницы',
     type: Number,
-    example: 1
+    example: 1,
+    minimum: PaginationLimits.PAGE.MIN,
+    required: false
   })
   @TransformValueToNumber()
   page?: number;
@@ -34,35 +38,40 @@ export class PaginationQueryDTO implements IPaginationQuery {
   @ApiProperty({
     description: 'Количество элементов на странице',
     type: Number,
-    example: 10
+    example: 10,
+    minimum: PaginationLimits.LIMIT.MIN,
+    maximum: PaginationLimits.LIMIT.MAX,
+    required: false
   })
   @TransformValueToNumber()
   limit?: number;
 
-  @IsOptional()
-  @IsObject()
   @ApiProperty({
-    description: 'Условие фильтрации',
-    type: Object,
-    example: { login: 'User Login' }
+    description: 'Поле сортировки',
+    type: String,
+    example: 'login',
+    required: false
   })
-  where?: Record<string, unknown>;
+  sortBy?: string;
 
   @IsOptional()
-  @IsObject()
+  @IsString()
   @ApiProperty({
-    description: 'Сортировка',
-    type: Object,
-    example: { createdAt: 'DESC' }
+    description: 'Направление сортировки',
+    type: String,
+    enum: SortDirectionTypeEnum,
+    example: SortDirectionTypeEnum.DESC,
+    required: false
   })
-  order?: Record<string, unknown>;
+  sortDirection: SortDirectionType;
 
   @IsOptional()
   @IsBoolean()
   @ApiProperty({
     description: 'Возвращать ли связанные данные',
     type: Boolean,
-    example: true
+    example: true,
+    required: false
   })
   @TransformValueToBoolean()
   returnRelations?: boolean;

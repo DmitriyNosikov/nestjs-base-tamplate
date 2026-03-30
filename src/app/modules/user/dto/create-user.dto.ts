@@ -4,29 +4,28 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDTO {
   @IsString()
-  @IsOptional()
   @ApiProperty({
     description: 'Логин пользователя',
     type: String,
     example: 'admin'
   })
-  login?: string;
+  login: string;
 
   @IsString()
-  @IsOptional()
   @ApiProperty({
     description: 'Пароль пользователя',
     type: String,
-    example: 'Password'
+    example: 'password'
   })
-  password?: string;
+  password: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty({
     description: 'Роль пользователя',
     enum: UserRolesTypeEnum,
-    example: 'USER'
+    example: 'USER',
+    required: false
   })
   role?: UserRolesType;
 }

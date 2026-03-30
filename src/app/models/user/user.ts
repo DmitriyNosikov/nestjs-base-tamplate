@@ -8,9 +8,9 @@ import { Column, Model, Table } from 'sequelize-typescript';
 
 import { UserRolesType, UserRolesTypeEnum } from '@core/common/types';
 
-export interface UserModelI extends Model<
-  InferAttributes<UserModelI>,
-  InferCreationAttributes<UserModelI>
+export interface IUserModel extends Model<
+  InferAttributes<IUserModel>,
+  InferCreationAttributes<IUserModel>
 > {
   id: CreationOptional<number>;
 
@@ -20,7 +20,7 @@ export interface UserModelI extends Model<
 }
 
 @Table
-export class User extends Model<UserModelI> {
+export class User extends Model<IUserModel> {
   @Column({
     type: DataTypes.INTEGER,
     primaryKey: true,

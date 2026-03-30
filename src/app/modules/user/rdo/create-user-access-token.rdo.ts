@@ -4,7 +4,7 @@ import { Expose } from 'class-transformer';
 export class CreateUserAccessTokenRDO {
   @Expose()
   @ApiProperty({
-    description: 'Access-доступа',
+    description: 'JWT-ACCESS токен доступа',
     type: String,
     example: 'accessToken'
   })
@@ -12,7 +12,7 @@ export class CreateUserAccessTokenRDO {
 
   @Expose()
   @ApiProperty({
-    description: 'Refrersh-токен',
+    description: 'JWT-REFRESH токен обновления',
     type: String,
     example: 'refreshToken'
   })
