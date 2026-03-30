@@ -4,3 +4,4 @@ export { UserRolesType, UserRolesTypeEnum } from './roles.type';
 
 export { TokenType } from './token/token.type';
 export { RefreshTokenPayloadType, UserTokenPayloadType } from './token/token-payload.type';
+export { SortDirectionTypeEnum } from './sort-direction.type';

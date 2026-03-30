@@ -54,6 +54,22 @@ async function bootstrap() {
     .setDescription('Базовый шаблон NestJS')
     .setVersion('1.0')
     .addTag('users', 'Эндпоинты для работы с пользователями')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'JWT-ACCESS',
+      description: 'JWT токен доступа',
+      in: 'header',
+    }, 'JWT-ACCESS')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'JWT-REFRESH',
+      description: 'JWT токен обновления',
+      in: 'header',
+    }, 'JWT-REFRESH')
     .build();
 
   /*
@@ -62,9 +78,10 @@ async function bootstrap() {
     что уменьшает время инициализации приложения
     https://docs.nestjs.com/openapi/introduction
   */
-  const swaggerDocumentFactory = () => SwaggerModule.createDocument(app, swaggerConfig, {
-    ignoreGlobalPrefix: true
-  });
+  const swaggerDocumentFactory = () => SwaggerModule
+    .createDocument(app, swaggerConfig, {
+      ignoreGlobalPrefix: true
+    });
 
   SwaggerModule.setup(DOCS_PREFIX, app, swaggerDocumentFactory);
 
