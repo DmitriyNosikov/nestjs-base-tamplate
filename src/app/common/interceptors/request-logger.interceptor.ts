@@ -7,6 +7,20 @@ type RequestLoggerInterceptorOptions = {
   showBody: boolean,
 };
 
+const TagsEnum = {
+  SUCCESS: '✅',
+  WARNING: '⚠️',
+  ERROR: '❌',
+  SLOW: '🐌',
+  MEDIUM: '🚨',
+  FAST: '🚀',
+} as const;
+
+const RequestDurationTagsEnum = {
+  SLOW: 1000,
+  MEDIUM: 300,
+} as const;
+
 export class RequestLoggerInterceptor implements NestInterceptor {
   constructor(
     private readonly options: RequestLoggerInterceptorOptions = {
@@ -40,10 +54,28 @@ export class RequestLoggerInterceptor implements NestInterceptor {
 
     return next.handle()
       .pipe(
-        tap(() => {
-          const requestDuration = Date.now() - requestStartTime;
+        tap({
+          next: () => {
+            const { SLOW: SLOW_THRESHOLD } = RequestDurationTagsEnum;
+            const { MEDIUM: MEDIUM_THRESHOLD } = RequestDurationTagsEnum;
+            const { SLOW, MEDIUM, FAST } = TagsEnum;
 
-          logger.log(`Request duration: ${requestDuration}ms`);
+            const requestDuration = Date.now() - requestStartTime;
+            const tag = requestDuration > SLOW_THRESHOLD
+              ? SLOW
+              : (requestDuration > MEDIUM_THRESHOLD)
+                ? MEDIUM
+                : FAST;
+
+            logger.log(`Request duration: ${tag} ${requestDuration}ms`);
+          },
+          error: (error) => {
+            const requestDuration = Date.now() - requestStartTime;
+            const tag = TagsEnum.ERROR;
+            const status = error?.status || 500;
+
+            logger.error(`${tag} ${requestDuration}ms — ${status} ${error?.message || ''}`);
+          }
         })
       );
   }

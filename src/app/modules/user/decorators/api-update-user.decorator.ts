@@ -3,7 +3,6 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
-  ApiParam,
   ApiResponse,
   ApiUnauthorizedResponse,
   PartialType
@@ -15,12 +14,6 @@ export function ApiUpdateUser(summary: string) {
   return applyDecorators(
     ApiOperation({ summary }),
     ApiBearerAuth('JWT-ACCESS'),
-    ApiParam({
-      name: 'userId',
-      description: 'ID пользователя',
-      type: Number,
-      example: 1
-    }),
     ApiBody({ type: PartialType(CreateUserDTO) }),
     ApiResponse({
       status: 200,
