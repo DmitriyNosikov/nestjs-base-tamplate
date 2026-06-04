@@ -1,12 +1,10 @@
 import { IsString, ValidationError, validateOrReject } from 'class-validator';
-import { Logger } from '@nestjs/common';
-
-import { ConfigMessages } from '../config.constant';
+import { ConfigAbstract } from '../config.abstract';
 
 export const JWTConfigEnum = {
   JWT_ACCESS_TOKEN_SECRET: 'accessTokenSecret',
   JWT_ACCESS_TOKEN_EXPIRES_IN: 'accessTokenExpiresIn',
-  
+
   JWT_REFRESH_TOKEN_SECRET: 'refreshTokenSecret',
   JWT_REFRESH_TOKEN_EXPIRES_IN: 'refreshTokenExpiresIn',
 
@@ -20,8 +18,10 @@ export interface JWTConfigInterface {
   [JWTConfigEnum.JWT_REFRESH_TOKEN_EXPIRES_IN]: string,
 }
 
-export class JWTConfigSchema implements JWTConfigInterface {
-  private readonly logger: Logger = new Logger(JWTConfigSchema.name);
+export class JWTConfigSchema extends ConfigAbstract implements JWTConfigInterface {
+  constructor() {
+    super(JWTConfigSchema.name); // [JWT Config]
+  }
 
   @IsString()
   accessTokenSecret: string;
@@ -34,12 +34,4 @@ export class JWTConfigSchema implements JWTConfigInterface {
 
   @IsString()
   refreshTokenExpiresIn: string;
-
-  async validate() {
-    return await validateOrReject(this).catch((errors) => {
-      this.logger.log(`[JWT Config] ---> ${ConfigMessages.ERROR.VALIDATION}:`, errors);
-
-      throw new ValidationError();
-    });
-  }
 }

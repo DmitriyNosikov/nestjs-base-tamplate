@@ -1,7 +1,7 @@
 import { JwtModuleAsyncOptions, JwtModuleOptions } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config';
 import { ConfigEnvironment } from '../config.constant';
-import { JWTConfigEnum } from '../jwt-config/jwt-config.schema';
+import { JWTConfigEnum } from './jwt-config.schema';
 
 export function getJWTOptions(optionSpace: string): JwtModuleAsyncOptions {
   return {

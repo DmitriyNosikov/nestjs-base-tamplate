@@ -1,7 +1,7 @@
-import { Logger } from '@nestjs/common';
 import { IsNumber, IsOptional, IsString, Max, Min, ValidationError, validateOrReject } from 'class-validator';
 
-import { ConfigMessages, DEFAULT_PORT, PORT } from './config.constant';
+import { APP_PORT } from './config.constant';
+import { ConfigAbstract } from './config.abstract';
 
 export const ConfigEnum = {
   HOST: 'host',
@@ -15,26 +15,20 @@ export interface ConfigInterface {
   [ConfigEnum.CORS_ACCESS_ENABLED_URLS]: string;
 }
 
-export class ConfigSchema implements ConfigInterface {
-  private readonly logger: Logger = new Logger(ConfigSchema.name);
+export class ConfigSchema extends ConfigAbstract implements ConfigInterface {
+  constructor() {
+    super(ConfigSchema.name); // [App Config]
+  }
 
   @IsString()
   host: string;
 
   @IsNumber()
-  @Max(PORT.MAX)
-  @Min(PORT.MIN)
+  @Max(APP_PORT.MAX)
+  @Min(APP_PORT.MIN)
   @IsOptional()
-  port: number = DEFAULT_PORT;
+  port: number;
 
   @IsString()
   corsAccessEnabledURLs: string;
-
-  async validate() {
-    return await validateOrReject(this).catch((errors) => {
-      this.logger.log(`[App Config] ---> ${ConfigMessages.ERROR.VALIDATION}: `, errors);
-
-      throw new ValidationError();
-    });
-  }
 }

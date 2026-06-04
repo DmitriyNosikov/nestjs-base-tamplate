@@ -1,6 +1,5 @@
-export const DEFAULT_PORT = 5000;
-
-export const PORT = {
+export const APP_PORT = {
+  DEFAULT: 5000,
   MIN: 0,
   MAX: 65535
 };
@@ -9,10 +8,4 @@ export const ConfigEnvironment = {
   APP: 'app',
   JWT: 'jwt',
   PG: 'pg',
-} as const;
-
-export const ConfigMessages = {
-  ERROR: {
-    VALIDATION: 'Ошибка валидации переменных окружения'
-  }
 } as const;

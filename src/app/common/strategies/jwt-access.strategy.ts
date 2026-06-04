@@ -5,6 +5,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { ConfigEnvironment, JWTConfigEnum } from '@core/config';
+
 @Injectable()
 export class JWTAccessStrategy extends PassportStrategy(Strategy) {
   constructor(
